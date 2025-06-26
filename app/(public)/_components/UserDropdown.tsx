@@ -4,8 +4,6 @@ import {
   Home,
   LayoutDashboardIcon,
   LogOutIcon,
-  PinIcon,
-  UserPenIcon,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,7 +22,13 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 
-export default function UserDropdown() {
+interface IProps {
+  name: string;
+  email: string;
+  image: string;
+}
+
+export default function UserDropdown({ name, email, image }: IProps) {
   const router = useRouter();
   const handleSignOut = async () => {
     await authClient.signOut({
@@ -44,8 +48,8 @@ export default function UserDropdown() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
           <Avatar>
-            <AvatarImage src="./avatar.jpg" alt="Profile image" />
-            <AvatarFallback>KK</AvatarFallback>
+            <AvatarImage src={image} alt="Profile image" />
+            <AvatarFallback>{name[0].toUpperCase()}</AvatarFallback>
           </Avatar>
           <ChevronDownIcon
             size={16}
@@ -57,10 +61,10 @@ export default function UserDropdown() {
       <DropdownMenuContent className="max-w-64">
         <DropdownMenuLabel className="flex min-w-0 flex-col">
           <span className="text-foreground truncate text-sm font-medium">
-            Keith Kennedy
+            {name}
           </span>
           <span className="text-muted-foreground truncate text-xs font-normal">
-            k.kennedy@originui.com
+            {email}
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
