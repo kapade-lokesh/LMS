@@ -33,8 +33,8 @@ const VerifyEmail = () => {
         otp: otp,
         fetchOptions: {
           onSuccess: () => {
-            toast.success("Otp veryfied");
             router.push("/");
+            toast.success("Otp veryfied");
           },
           onError: () => {
             toast.error("Please Provide valid Otp");
