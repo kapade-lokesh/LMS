@@ -5,7 +5,7 @@ const layoutPublic = ({ children }: { children: ReactNode }) => {
   return (
     <div>
       <Navbar />
-      <main className="container mx-auto px-2 md:px-2 lg:px-7">{children}</main>
+      <main className=" mx-auto px-4 md:px-8 lg:px-12">{children}</main>
     </div>
   );
 };
