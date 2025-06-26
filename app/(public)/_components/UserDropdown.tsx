@@ -18,9 +18,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
-import { toast } from "sonner";
+
+import { useSignOut } from "@/hooks/use-signout";
 
 interface IProps {
   name: string;
@@ -29,20 +28,7 @@ interface IProps {
 }
 
 export default function UserDropdown({ name, email, image }: IProps) {
-  const router = useRouter();
-  const handleSignOut = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/");
-          toast.success("sign out sucessfully");
-        },
-        onError: () => {
-          toast.success("Something went Wrong");
-        },
-      },
-    });
-  };
+  const handleSignOut = useSignOut();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
