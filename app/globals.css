@@ -36,8 +36,8 @@
   --sidebar-accent-foreground: oklch(0 0 0);
   --sidebar-border: oklch(0.9401 0 0);
   --sidebar-ring: oklch(0 0 0);
-  --font-sans: Plus Jakarta Sans, sans-serif;
-  --font-serif: Lora, serif;
+  --font-sans: Inter, sans-serif;
+  --font-serif: Roboto, sans-serif;
   --font-mono: IBM Plex Mono, monospace;
   --radius: 0.675rem;
   --shadow-2xs: 0px 2px 3px 0px hsl(0 0% 0% / 0.08);
@@ -90,8 +90,8 @@
   --sidebar-accent-foreground: oklch(0.6132 0.2294 291.7437);
   --sidebar-border: oklch(0.3289 0.0092 268.3843);
   --sidebar-ring: oklch(0.6132 0.2294 291.7437);
-  --font-sans: Plus Jakarta Sans, sans-serif;
-  --font-serif: Lora, serif;
+  --font-sans: Inter, sans-serif;
+  --font-serif: Roboto, sans-serif;
   --font-mono: IBM Plex Mono, monospace;
   --radius: 0.675rem;
   --shadow-2xs: 0px 2px 3px 0px hsl(0 0% 0% / 0.08);
@@ -167,6 +167,10 @@
   --tracking-wide: calc(var(--tracking-normal) + 0.025em);
   --tracking-wider: calc(var(--tracking-normal) + 0.05em);
   --tracking-widest: calc(var(--tracking-normal) + 0.1em);
+}
+
+body {
+  letter-spacing: var(--tracking-normal);
 }
 
 body {
