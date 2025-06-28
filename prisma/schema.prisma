@@ -76,6 +76,7 @@ model Course {
 
    title String 
    description String
+   fileKey String
    price Int
    duration Int
    level CourseLevel @default(Beginner)
@@ -99,6 +100,6 @@ enum CourseLevel{
 enum CourseStatus{
   Draft
   Published
-  Archieved
+  Archived
 }
 
