@@ -32,7 +32,6 @@ import Image from "next/image";
 import logo from "@/public/logic_looms_logo.svg";
 
 const data = {
-   
   navMain: [
     {
       title: "Dashboard",
@@ -40,8 +39,8 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Courses",
-      url: "/courses",
+      title: "Course",
+      url: "admin/courses",
       icon: IconListDetails,
     },
     {
@@ -151,7 +150,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser/>
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );
