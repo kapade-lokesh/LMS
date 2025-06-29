@@ -9,7 +9,13 @@ const Uploader = () => {
     // Do something with the files
     console.log(acceptedFiles);
   }, []);
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { "images/*": [] },
+    maxFiles: 1,
+    multiple: false,
+    maxSize: 5 * 1024 * 1024,
+  });
 
   return (
     <Card
