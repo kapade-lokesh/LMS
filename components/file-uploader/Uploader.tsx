@@ -1,20 +1,44 @@
 "use client";
 import { useCallback } from "react";
-import { useDropzone } from "react-dropzone";
+import { FileRejection, useDropzone } from "react-dropzone";
 import { Card, CardContent } from "../ui/card";
 import { cn } from "@/lib/utils";
 import { RenderEmptyState, RenderErrorState } from "./RenderState";
+import { toast } from "sonner";
 const Uploader = () => {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // Do something with the files
     console.log(acceptedFiles);
   }, []);
+
+  const rejectedFiles = (fileRejection: FileRejection[]) => {
+    if (fileRejection.length) {
+      const tooManyFiles = fileRejection.find(
+        (rejection) => rejection.errors[0].code === "too-many-files"
+      );
+
+      const fileTooLarg = fileRejection.find(
+        (rejection) => rejection.errors[0].code === "file-too-large"
+      );
+
+      if (tooManyFiles) {
+        toast.error("Too many files are selected, max is 1");
+      }
+
+      if (fileTooLarg) {
+        console.log("");
+        toast.error("File size exseed, max is 5MB");
+      }
+    }
+  };
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { "images/*": [] },
     maxFiles: 1,
     multiple: false,
-    maxSize: 5 * 1024 * 1024,
+    maxSize: 1024,
+    onDropRejected: rejectedFiles,
   });
 
   return (
