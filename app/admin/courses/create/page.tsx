@@ -38,6 +38,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import Editor from "@/components/rich-text-editor/Editor";
+import Uploader from "@/components/file-uploader/Uploader";
 
 const CourserCreationPage = () => {
   const form = useForm<CourseSchemaType>({
@@ -166,7 +167,7 @@ const CourserCreationPage = () => {
                   <FormItem className="w-full">
                     <FormLabel>Thumbnail Image</FormLabel>
                     <FormControl>
-                      <Input placeholder="thumbnail url" {...field} />
+                      <Uploader />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
