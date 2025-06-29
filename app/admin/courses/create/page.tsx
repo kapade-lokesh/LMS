@@ -37,6 +37,7 @@ import {
   SelectValue,
   SelectItem,
 } from "@/components/ui/select";
+import Editor from "@/components/rich-text-editor/Editor";
 
 const CourserCreationPage = () => {
   const form = useForm<CourseSchemaType>({
@@ -146,12 +147,12 @@ const CourserCreationPage = () => {
 
               <FormField
                 control={form.control}
-                name="description"
+                name="smallDescription"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>Small Description</FormLabel>
                     <FormControl>
-                      <Input placeholder="Description" {...field} />
+                      <Editor field={field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
