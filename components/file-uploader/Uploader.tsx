@@ -3,8 +3,14 @@ import { useCallback, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { Card, CardContent } from "../ui/card";
 import { cn } from "@/lib/utils";
-import { RenderEmptyState, RenderErrorState } from "./RenderState";
+import {
+  RenderEmptyState,
+  RenderErrorState,
+  RendreUploadedState,
+  RenderUploadingState,
+} from "./RenderState";
 import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
 
 interface uploaderState {
   id: string | null;
@@ -30,9 +36,105 @@ const Uploader = () => {
   });
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    // Do something with the files
-    console.log(acceptedFiles);
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles[0];
+
+      setFileState({
+        error: false,
+        file: file,
+        id: uuidv4(),
+        objectUrl: URL.createObjectURL(file),
+        uploading: false,
+        progress: 0,
+        isDeleting: false,
+        fileType: "image",
+      });
+
+      uploadFile(file);
+    }
   }, []);
+
+  const uploadFile = async (file: File) => {
+    setFileState((prev) => ({
+      ...prev,
+      uploading: true,
+      progress: 0,
+    }));
+    try {
+      const preSignedRes = await fetch("/api/s3/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: file.name,
+          contentType: file.type,
+          size: file.size,
+          isImage: true,
+        }),
+      });
+
+      if (!preSignedRes.ok) {
+        toast.error("fail to get presigned url");
+        setFileState((prev) => ({
+          ...prev,
+          uploading: true,
+          progress: 0,
+          error: true,
+        }));
+        return;
+      }
+
+      const { presignedURL, key } = await preSignedRes.json();
+
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percentageCompleted = (event.loaded / event.total) * 100;
+
+            setFileState((prev) => ({
+              ...prev,
+
+              progress: Math.round(percentageCompleted),
+            }));
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status === 200 || xhr.status === 204) {
+            setFileState((prev) => ({
+              ...prev,
+              uploading: false,
+              progress: 100,
+              key: key,
+            }));
+
+            toast.success("File uploaded successfully");
+            resolve();
+          } else {
+            reject(new Error("Upload fail..."));
+          }
+        };
+
+        xhr.onerror = () => {
+          reject(new Error("Upload fail..."));
+        };
+
+        xhr.open("PUT", presignedURL);
+        xhr.setRequestHeader("Content-Type", file.type);
+        xhr.send(file);
+      });
+    } catch (error) {
+      toast.error("something went wrong");
+
+      setFileState((prev) => ({
+        ...prev,
+        uploading: false,
+        progress: 0,
+        error: true,
+      }));
+    }
+  };
 
   const rejectedFiles = (fileRejection: FileRejection[]) => {
     if (fileRejection.length) {
@@ -55,9 +157,30 @@ const Uploader = () => {
     }
   };
 
+  const renderContent = () => {
+    if (fileState.uploading) {
+      return (
+        <RenderUploadingState
+          file={fileState.file as File}
+          progress={fileState.progress}
+        />
+      );
+    }
+
+    if (fileState.error) {
+      return <RenderErrorState />;
+    }
+
+    if (fileState.objectUrl) {
+      return <RendreUploadedState previewUrl={fileState.objectUrl as string} />;
+    }
+
+    return <RenderEmptyState isDragActive={isDragActive} />;
+  };
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "images/*": [] },
+    accept: { "image/*": [] },
     maxFiles: 1,
     multiple: false,
     maxSize: 5 * 1024 * 1024,
@@ -76,8 +199,7 @@ const Uploader = () => {
     >
       <CardContent className="flex items-center justify-center h-full w-full p-4">
         <input {...getInputProps()} />
-        {/* <RenderErrorState /> */}
-        <RenderEmptyState isDragActive={isDragActive} />
+        {renderContent()}
       </CardContent>
     </Card>
   );
