@@ -14,9 +14,9 @@ import {
   CourseSchemaType,
   courseStatus,
 } from "@/lib/zodSchemas";
-import { ArrowLeft, SparkleIcon } from "lucide-react";
+import { ArrowLeft, Loader2, PlusIcon, SparkleIcon } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import slugify from "slugify";
@@ -39,8 +39,15 @@ import {
 } from "@/components/ui/select";
 import Editor from "@/components/rich-text-editor/Editor";
 import Uploader from "@/components/file-uploader/Uploader";
+import { tryCatch } from "@/hooks/try-catch";
+import { CreateCourse } from "./actions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const CourserCreationPage = () => {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
   const form = useForm<CourseSchemaType>({
     resolver: zodResolver(courseSchema),
     defaultValues: {
@@ -58,8 +65,22 @@ const CourserCreationPage = () => {
   });
 
   function onSubmit(values: CourseSchemaType) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+    startTransition(async () => {
+      const { data, error } = await tryCatch(CreateCourse(values));
+
+      if (error) {
+        toast.error("An unexpected error occured. Please try again");
+        return;
+      }
+
+      if (data.status === "success") {
+        toast.success(data.message);
+        form.reset();
+        router.push("/admin/courses");
+      } else if (data.status === "error") {
+        toast.error(data.message);
+      }
+    });
     console.log(values);
   }
 
@@ -148,10 +169,10 @@ const CourserCreationPage = () => {
 
               <FormField
                 control={form.control}
-                name="smallDescription"
+                name="description"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Small Description</FormLabel>
+                    <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Editor field={field} />
                     </FormControl>
@@ -259,7 +280,7 @@ const CourserCreationPage = () => {
 
                 <FormField
                   control={form.control}
-                  name="duration"
+                  name="price"
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormLabel>Price (&#8377;)</FormLabel>
@@ -304,7 +325,17 @@ const CourserCreationPage = () => {
                 )}
               />
 
-              <Button>Create Course +</Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <>
+                    creating... <Loader2 className="ml-1 animate-spin" />
+                  </>
+                ) : (
+                  <>
+                    Create Course <PlusIcon className="ml-1" size={16} />
+                  </>
+                )}
+              </Button>
             </form>
           </Form>
         </CardContent>
