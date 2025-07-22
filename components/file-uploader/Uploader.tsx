@@ -11,6 +11,7 @@ import {
 } from "./RenderState";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { useConstructUrl } from "@/hooks/use-construct-url";
 
 interface uploaderState {
   id: string | null;
@@ -30,6 +31,7 @@ interface iAppProps {
 }
 
 const Uploader = ({ value, onChange }: iAppProps) => {
+  const fileUrl = useConstructUrl(value || "");
   const [fileState, setFileState] = useState<uploaderState>({
     error: false,
     file: null,
@@ -39,6 +41,7 @@ const Uploader = ({ value, onChange }: iAppProps) => {
     isDeleting: false,
     fileType: "image",
     key: value,
+    objectUrl: fileUrl,
   });
 
   const onDrop = useCallback(
