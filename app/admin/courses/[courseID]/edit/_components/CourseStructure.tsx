@@ -17,8 +17,13 @@ import {
 } from "@dnd-kit/sortable";
 import { useState } from "react";
 import { CSS } from "@dnd-kit/utilities";
+import { AdminCourseTypeSingle } from "@/app/data/admin/admin-get-course";
 
-const CourseStructure = () => {
+interface iAppProps {
+  data: AdminCourseTypeSingle;
+}
+
+const CourseStructure = ({ data }: iAppProps) => {
   const [items, setItems] = useState(["1", "2", "3"]);
 
   function SortableItem(props: any) {
